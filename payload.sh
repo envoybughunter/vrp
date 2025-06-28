@@ -1,5 +1,8 @@
 #!/bin/bash
-echo "[vuln.sh] 127.0.0.1:"
-read USER_INPUT
-echo "[vuln.sh] Çalıştırılıyor ➜ $USER_INPUT"
-bash -c "$USER_INPUT"
+cat ../../../../../../../etc/passwd
+
+cat ../../../../../../../proc/self/environ
+
+cat ../../../../../../../proc/self/stat
+
+cat ../../../../../../../proc/self/status
