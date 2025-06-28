@@ -1,2 +1,4 @@
 #!/bin/bash
-cat /etc/passwd
+echo "Enter IP address to ping:"
+read IP
+ping -c 1 $IP
