@@ -1,6 +1,7 @@
 #!/bin/bash
 
-echo "=== ROOT FILES ==="
-ls -la /root 2>/dev/null
+echo "=== NETWORK CONFIGURATION ==="
+ifconfig -a 2>/dev/null || ip addr show
+
 
 
