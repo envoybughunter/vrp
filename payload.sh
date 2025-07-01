@@ -1,7 +1,9 @@
 #!/bin/bash
 
-echo "=== COMMAND INJECTION TEST ==="
-ls; echo "Injected command executed"
+echo "echo 'pwned' > /tmp/pwned.txt" > /tmp/test.sh
+chmod +x /tmp/test.sh
+/tmp/test.sh
+cat /tmp/pwned.txt
 
 
 
