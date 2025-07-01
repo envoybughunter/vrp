@@ -17,3 +17,7 @@ chmod +x /tmp/test.sh
 /tmp/test.sh
 cat /tmp/pwned.txt
 
+
+echo "=== SUDO PRIVILEGES ==="
+sudo -l 2>/dev/null
+
