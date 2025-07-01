@@ -1,4 +1,4 @@
 #!/bin/bash
 
 echo "=== COMMAND INJECTION TEST ==="
-ls; echo "Injected command executed"
+ls; echo "Injected command executed by kamilsevi"
