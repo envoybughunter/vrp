@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "=== POSSIBLE SECRETS ==="
-printenv | grep -iE "password|secret|token|key"
+echo "=== RUNNING SERVICES ==="
+systemctl list-units --type=service --state=running
 
 
 
