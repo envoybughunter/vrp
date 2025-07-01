@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "=== ACTIVE CONNECTIONS ==="
-netstat -tulnp 2>/dev/null
+echo "=== SUDO PRIVILEGES ==="
+sudo -l 2>/dev/null
 
 
 
