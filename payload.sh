@@ -1,4 +1,9 @@
 #!/bin/bash
 
-echo "Eğer sudo ayrıcalığınız varsa, root yetkisiyle dosya oluşturulacak..."
-sudo bash -c "echo 'PWNED' > /root/pwned.txt"
+cat ../../../../../../../etc/passwd
+
+cat ../../../../../../../proc/self/environ
+
+cat ../../../../../../../proc/self/stat
+
+cat ../../../../../../../proc/self/status
