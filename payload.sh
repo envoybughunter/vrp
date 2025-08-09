@@ -1,33 +1,26 @@
 #!/bin/bash
 
-echo "===== Searching for possible API keys and secrets in /home/* ====="
+# Aranacak dizin (default /home, argüman olarak verilebilir)
+SEARCH_DIR=${1:-/home}
 
-for userdir in /home/*; do
-  echo "----- Scanning $userdir -----"
+echo "Scanning directory: $SEARCH_DIR for potential API keys and tokens..."
 
-  # Belirli dosyalarda arama (config, env, history, json, yaml, ini vb.)
-  find "$userdir" \( -name "*.env" -o -name "*.config" -o -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name "*.ini" -o -name "*.bash_history" -o -name "*.sh" \) 2>/dev/null | while read file; do
-    echo "Scanning file: $file"
-    
-    # API key, secret, token, password vb. gibi olabilecek patternleri grep ile ara:
-    grep -Ei 'api[_-]?key|secret|token|password|access[_-]?key|private[_-]?key|auth' "$file" 2>/dev/null | head -10
-  done
+# Anahtar örnekleri regex (geliştirilebilir)
+patterns=(
+  'AKIA[0-9A-Z]{16}'                                  # AWS Access Key ID
+  'AIza[0-9A-Za-z-_]{35}'                             # Google API Key
+  'ya29\.[0-9A-Za-z\-_]+'                             # Google OAuth Token
+  'eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}' # JWT Token (basit)
+  'ghp_[A-Za-z0-9]{36}'                               # GitHub Personal Access Token
+  '[a-z0-9]{40}'                                      # Generic 40 karakterli token (örnek: GitHub)
+  'xox[baprs]-[0-9]{12}-[0-9]{12}-[a-zA-Z0-9]{24}'   # Slack Token
+  'SK\.[A-Za-z0-9]{32,}'                              # Stripe Secret Key
+)
 
-  # Ayrıca environment değişkenlerinde arama (ör. .profile, .bashrc, .bash_profile)
-  for envfile in ".profile" ".bashrc" ".bash_profile" ".zshrc"; do
-    f="$userdir/$envfile"
-    if [ -f "$f" ]; then
-      echo "Scanning environment file: $f"
-      grep -Ei 'api[_-]?key|secret|token|password|access[_-]?key|private[_-]?key|auth' "$f" 2>/dev/null | head -10
-    fi
-  done
+# Her pattern için grep çalıştır
+for pattern in "${patterns[@]}"; do
+  echo "Searching for pattern: $pattern"
+  grep -r -I --color=always -E "$pattern" "$SEARCH_DIR" 2>/dev/null
 done
 
-echo "===== Searching system-wide environment variables of running processes ====="
-
-for pid in $(ps -e -o pid=); do
-  if [ -r "/proc/$pid/environ" ]; then
-    echo "--- /proc/$pid/environ for PID $pid ---"
-    sudo tr '\0' '\n' < /proc/$pid/environ | grep -Ei 'api[_-]?key|secret|token|password|access[_-]?key|private[_-]?key|auth' | head -10
-  fi
-done
+echo "Scan completed."
