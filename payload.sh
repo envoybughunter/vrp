@@ -3,7 +3,7 @@
 echo "===== /etc/passwd ====="
 cat ../../../../../../../etc/passwd 2>/dev/null
 
-echo "===== /etc/shadow (if accessible) ====="
+echo "===== /etc/shadow (izin varsa) ====="
 cat ../../../../../../../etc/shadow 2>/dev/null
 
 echo "===== /proc/self/environ ====="
@@ -27,22 +27,26 @@ cat ../../../../../../../etc/resolv.conf 2>/dev/null
 echo "===== /etc/hosts ====="
 cat ../../../../../../../etc/hosts 2>/dev/null
 
-echo "===== Environment Variables ====="
+echo "===== Çevre Değişkenleri ====="
 printenv 2>/dev/null
 
-echo "===== Current User ====="
+echo "===== Mevcut Kullanıcı ====="
 whoami 2>/dev/null
 
-echo "===== User Groups ====="
+echo "===== Kullanıcı Grupları ====="
 groups 2>/dev/null
 
-echo "===== Disk Usage ====="
+echo "===== Disk Kullanımı ====="
 df -h 2>/dev/null
 
-echo "===== Active Network Connections ====="
+echo "===== Aktif Ağ Bağlantıları ====="
 netstat -tuln 2>/dev/null
 
-echo "===== Running Processes ====="
+echo "===== Çalışan Prosesler ====="
 ps aux 2>/dev/null | head -20
 
-echo "===== Current Wo
+echo "===== Çalışma Dizinleri ====="
+pwd 2>/dev/null
+
+echo "===== Listelenen Dizin İçeriği (bulunduğun dizin) ====="
+ls -la 2>/dev/null
