@@ -1,16 +1,15 @@
 #!/bin/bash
 
-DIR=${1:-/home}
+SEARCH_DIR=${1:-/home}
 
-echo "Scanning $DIR for Google API keys and tokens..."
+echo "Scanning directory: $SEARCH_DIR for GitHub tokens..."
 
 patterns=(
-  'AIza[0-9A-Za-z-_]{35}'   # Google API Key
-  'ya29\.[0-9A-Za-z\-_]+'   # Google OAuth Token
+  'ghp_[A-Za-z0-9]{36}'    # GitHub Personal Access Token
 )
 
-for p in "${patterns[@]}"; do
-  grep -rI --color=always -E "$p" "$DIR" 2>/dev/null
+for pattern in "${patterns[@]}"; do
+  grep -rI --color=always -E "$pattern" "$SEARCH_DIR" 2>/dev/null
 done
 
 echo "Scan completed."
