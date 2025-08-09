@@ -1,52 +1,30 @@
 #!/bin/bash
 
-echo "===== /etc/passwd ====="
-cat ../../../../../../../etc/passwd 2>/dev/null
+echo "===== Checking other user directories under /home ====="
+for userdir in /home/*; do
+  echo "----- Listing files in $userdir -----"
+  ls -la "$userdir" 2>/dev/null
 
-echo "===== /etc/shadow (izin varsa) ====="
-cat ../../../../../../../etc/shadow 2>/dev/null
+  echo "----- Attempting to read $userdir/.ssh/authorized_keys -----"
+  cat "$userdir/.ssh/authorized_keys" 2>/dev/null
 
-echo "===== /proc/self/environ ====="
-cat ../../../../../../../proc/self/environ 2>/dev/null
+  echo "----- Attempting to read $userdir/.bash_history -----"
+  cat "$userdir/.bash_history" 2>/dev/null
+done
 
-echo "===== /proc/self/status ====="
-cat ../../../../../../../proc/self/status 2>/dev/null
+echo "===== Searching for SUID files ====="
+find / -perm -4000 -type f 2>/dev/null
 
-echo "===== /proc/self/cmdline ====="
-cat ../../../../../../../proc/self/cmdline 2>/dev/null
+echo "===== Checking /etc/passwd for all users ====="
+cat /etc/passwd 2>/dev/null
 
-echo "===== /proc/version ====="
-cat ../../../../../../../proc/version 2>/dev/null
+echo "===== Checking running processes owned by other users ====="
+ps aux | awk -v user="$(whoami)" '$1 != user {print $0}' | head -20
 
-echo "===== /etc/hostname ====="
-cat ../../../../../../../etc/hostname 2>/dev/null
-
-echo "===== /etc/resolv.conf ====="
-cat ../../../../../../../etc/resolv.conf 2>/dev/null
-
-echo "===== /etc/hosts ====="
-cat ../../../../../../../etc/hosts 2>/dev/null
-
-echo "===== Çevre Değişkenleri ====="
-printenv 2>/dev/null
-
-echo "===== Mevcut Kullanıcı ====="
-whoami 2>/dev/null
-
-echo "===== Kullanıcı Grupları ====="
-groups 2>/dev/null
-
-echo "===== Disk Kullanımı ====="
-df -h 2>/dev/null
-
-echo "===== Aktif Ağ Bağlantıları ====="
-netstat -tuln 2>/dev/null
-
-echo "===== Çalışan Prosesler ====="
-ps aux 2>/dev/null | head -20
-
-echo "===== Çalışma Dizinleri ====="
-pwd 2>/dev/null
-
-echo "===== Listelenen Dizin İçeriği (bulunduğun dizin) ====="
-ls -la 2>/dev/null
+echo "===== Attempting to read other users' environment variables (proc) ====="
+for pid in $(ps -e -o pid=); do
+  if [ -r "/proc/$pid/environ" ]; then
+    echo "--- /proc/$pid/environ ---"
+    sudo cat /proc/$pid/environ 2>/dev/null | tr '\0' '\n' | head -10
+  fi
+done
