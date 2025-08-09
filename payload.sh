@@ -1,32 +1,12 @@
 #!/bin/bash
 
-TARGET_DIR="$1"
-TEST_FILE="$TARGET_DIR/poc_testfile"
-
-echo "[*] Testing write/delete permissions in: $TARGET_DIR"
-
-# Dosya oluştur
-echo "PoC file created by $(whoami)" > "$TEST_FILE" 2>/dev/null
-if [[ $? -ne 0 ]]; then
-  echo "[-] Cannot create file in $TARGET_DIR"
-  exit 1
-fi
-echo "[+] File created: $TEST_FILE"
-
-# Dosyayı değiştir
-echo "PoC modification by $(whoami)" >> "$TEST_FILE" 2>/dev/null
-if [[ $? -ne 0 ]]; then
-  echo "[-] Cannot modify file in $TARGET_DIR"
-  exit 1
-fi
-echo "[+] File modified"
-
-# Dosyayı sil
-rm "$TEST_FILE" 2>/dev/null
-if [[ $? -ne 0 ]]; then
-  echo "[-] Cannot delete file in $TARGET_DIR"
-  exit 1
-fi
-echo "[+] File deleted successfully"
-
-echo "[*] PoC test completed."
+for dir in /tmp /var/tmp /dev/shm; do
+  perms=$(stat -c "%a" "$dir")
+  sticky=$(ls -ld "$dir" | awk '{print substr($1,10,1)}')
+  echo -n "Checking $dir : permissions=$perms, sticky_bit=$sticky -> "
+  if [[ $perms == 777 && $sticky != "t" ]]; then
+    echo "CRITICAL: World-writable without sticky bit!"
+  else
+    echo "OK"
+  fi
+done
