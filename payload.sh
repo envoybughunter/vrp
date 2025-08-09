@@ -1,12 +1,32 @@
 #!/bin/bash
 
-echo "== World-writable directories without sticky bit (high risk) =="
-find / -xdev -type d -perm -0002 ! -perm -1000 2>/dev/null
+TARGET_DIR="$1"
+TEST_FILE="$TARGET_DIR/poc_testfile"
 
-echo -e "\n== SUID/SGID root owned files (potential privilege escalation) =="
-find / -xdev \( -perm -4000 -o -perm -2000 \) -type f 2>/dev/null
+echo "[*] Testing write/delete permissions in: $TARGET_DIR"
 
-echo -e "\n== /etc/sudoers and users with sudo privileges =="
-ls -l /etc/sudoers 2>/dev/null
-grep -E '^[^#].*ALL' /etc/sudoers 2>/dev/null
-getent group sudo 2>/dev/null
+# Dosya oluştur
+echo "PoC file created by $(whoami)" > "$TEST_FILE" 2>/dev/null
+if [[ $? -ne 0 ]]; then
+  echo "[-] Cannot create file in $TARGET_DIR"
+  exit 1
+fi
+echo "[+] File created: $TEST_FILE"
+
+# Dosyayı değiştir
+echo "PoC modification by $(whoami)" >> "$TEST_FILE" 2>/dev/null
+if [[ $? -ne 0 ]]; then
+  echo "[-] Cannot modify file in $TARGET_DIR"
+  exit 1
+fi
+echo "[+] File modified"
+
+# Dosyayı sil
+rm "$TEST_FILE" 2>/dev/null
+if [[ $? -ne 0 ]]; then
+  echo "[-] Cannot delete file in $TARGET_DIR"
+  exit 1
+fi
+echo "[+] File deleted successfully"
+
+echo "[*] PoC test completed."
